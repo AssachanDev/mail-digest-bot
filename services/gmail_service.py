@@ -1,4 +1,5 @@
 import os
+import base64
 import logging
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -9,6 +10,7 @@ from .base_mail_service import BaseMailService
 
 logger = logging.getLogger(__name__)
 SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+BODY_LIMIT = 1500  # chars sent to Ollama per email
 
 
 class GmailService(BaseMailService):
@@ -59,16 +61,32 @@ class GmailService(BaseMailService):
             msg = self.service.users().messages().get(
                 userId="me",
                 id=message_id,
-                format="metadata",
-                metadataHeaders=["Subject", "From"],
+                format="full",
             ).execute()
+
             headers = {h["name"]: h["value"] for h in msg["payload"]["headers"]}
+            body = self._extract_body(msg["payload"])
+
             return {
                 "id": message_id,
                 "subject": headers.get("Subject", "(no subject)"),
                 "from": headers.get("From", "Unknown"),
-                "snippet": msg.get("snippet", ""),
+                "snippet": body[:BODY_LIMIT] if body else msg.get("snippet", ""),
             }
         except Exception as e:
             logger.error(f"Gmail get message error {message_id}: {e}")
             return None
+
+    def _extract_body(self, payload) -> str:
+        """Recursively extract plain text body from email payload."""
+        if payload.get("mimeType") == "text/plain":
+            data = payload.get("body", {}).get("data", "")
+            if data:
+                return base64.urlsafe_b64decode(data).decode("utf-8", errors="replace")
+
+        for part in payload.get("parts", []):
+            result = self._extract_body(part)
+            if result:
+                return result
+
+        return ""
