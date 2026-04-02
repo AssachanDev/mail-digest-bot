@@ -22,7 +22,7 @@ class OllamaService:
                     "stream": False,
                     "options": {"num_predict": 500},
                 },
-                timeout=60,
+                timeout=300,
             )
             response.raise_for_status()
             return response.json().get("response", "").strip()
