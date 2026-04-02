@@ -2,7 +2,7 @@ import logging
 import os
 
 from dotenv import load_dotenv
-from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters
+from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
 from services.gmail_service import GmailService
 from services.ollama_service import OllamaService
@@ -39,7 +39,6 @@ def main():
     cmd = CommandHandlers(gmail, ollama, state)
     app.add_handler(CommandHandler("start", cmd.start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, cmd.handle_keyboard))
-    app.add_handler(CallbackQueryHandler(cmd.handle_callback))
 
     async def polling_job(context):
         await poll_emails(context, gmail, ollama, state, user_id)

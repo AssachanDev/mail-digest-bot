@@ -19,9 +19,7 @@ Automatically monitors your Gmail inbox, summarizes new emails using a local LLM
 
 - **Auto-polling** — checks Gmail every 2 minutes in the background
 - **AI summaries** — sends emails to a local Ollama instance (llama3.1:8b) and returns bullet-point digests
-- **Reply Keyboard** — persistent 4-button menu, no need to type commands
-- **Snooze** — pause notifications for 1 / 3 / 8 hours, auto-resumes
-- **History** — view the last 5 summaries at any time
+- **History** — view the last 5 summaries at any time via a single keyboard button
 - **Remote Ollama support** — bot and Ollama can run on different servers
 
 ---
@@ -280,15 +278,11 @@ sudo systemctl disable mail-digest-bot.service
 The bot uses a **persistent Reply Keyboard** — no typing required.
 
 ```
-[ ⏸ Pause  ]  [ ℹ️ Status  ]
-[ 🔕 Snooze ]  [ 📋 History ]
+[ 📋 History ]
 ```
 
 | Button | Description |
 |--------|-------------|
-| ⏸ Pause / ▶️ Resume | Toggle auto-polling on or off |
-| ℹ️ Status | Show current status, last poll time, snooze info |
-| 🔕 Snooze | Pause notifications for 1 / 3 / 8 hours — auto-resumes |
 | 📋 History | View last 5 email summaries |
 
 ---
