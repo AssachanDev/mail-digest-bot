@@ -1,7 +1,7 @@
 import logging
 import requests
 
-from .prompt_builder import build_summary_prompt
+from .prompt_builder import build_system_prompt, build_user_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -12,22 +12,24 @@ class OllamaService:
         self.model = model
 
     def summarize_emails(self, emails: list[dict]) -> str:
-        prompt = build_summary_prompt(emails)
         try:
             response = requests.post(
-                f"{self.host}/api/generate",
+                f"{self.host}/api/chat",
                 json={
                     "model": self.model,
-                    "prompt": prompt,
                     "stream": False,
                     "options": {"num_predict": 500},
+                    "messages": [
+                        {"role": "system", "content": build_system_prompt()},
+                        {"role": "user", "content": build_user_prompt(emails)},
+                    ],
                 },
                 timeout=300,
             )
             response.raise_for_status()
-            return response.json().get("response", "").strip()
+            return response.json()["message"]["content"].strip()
         except requests.exceptions.Timeout:
-            raise TimeoutError("Ollama request timed out (60s)")
+            raise TimeoutError("Ollama request timed out")
         except requests.exceptions.ConnectionError:
             raise ConnectionError(f"Cannot connect to Ollama at {self.host}")
         except Exception as e:
