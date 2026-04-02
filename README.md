@@ -278,12 +278,13 @@ sudo systemctl disable mail-digest-bot.service
 The bot uses a **persistent Reply Keyboard** — no typing required.
 
 ```
-[ 📋 History ]
+[ 📋 History ]  [ 🗑 Clear History ]
 ```
 
 | Button | Description |
 |--------|-------------|
 | 📋 History | View last 5 email summaries |
+| 🗑 Clear History | Clear all stored summaries |
 
 ---
 

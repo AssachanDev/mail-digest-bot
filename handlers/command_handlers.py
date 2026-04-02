@@ -11,11 +11,12 @@ from services.ollama_service import OllamaService
 logger = logging.getLogger(__name__)
 
 BTN_HISTORY = "📋 History"
+BTN_CLEAR = "🗑 Clear History"
 
 
 def get_main_keyboard(polling_active: bool = True) -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
-        [[BTN_HISTORY]],
+        [[BTN_HISTORY, BTN_CLEAR]],
         resize_keyboard=True,
     )
 
@@ -38,6 +39,8 @@ class CommandHandlers:
 
         if text == BTN_HISTORY:
             await self._show_history(update)
+        elif text == BTN_CLEAR:
+            await self._clear_history(update)
 
     async def _show_history(self, update: Update):
         history = self.state.get_history(limit=5)
@@ -64,6 +67,10 @@ class CommandHandlers:
         for i, chunk in enumerate(chunks):
             await update.message.reply_text(
                 chunk,
-                reply_markup=get_main_keyboard(self.state.is_polling_active()) if i == len(chunks) - 1 else None,
+                reply_markup=get_main_keyboard() if i == len(chunks) - 1 else None,
             )
+
+    async def _clear_history(self, update: Update):
+        self.state.clear_history()
+        await update.message.reply_text("🗑 History cleared.", reply_markup=get_main_keyboard())
 

@@ -98,3 +98,7 @@ class StateManager:
 
     def get_history(self, limit=5) -> list[dict]:
         return self.state["history"][-limit:]
+
+    def clear_history(self):
+        self.state["history"] = []
+        self._save()
