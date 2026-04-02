@@ -30,7 +30,8 @@ async def poll_emails(
         summary = ollama.summarize_emails(new_emails)
         await context.bot.send_message(
             chat_id=user_id,
-            text=f"📮 New emails — Gmail\n\n{summary}",
+            text=f"📮 *New emails — Gmail*\n\n{summary}",
+            parse_mode="Markdown",
         )
 
         state.add_history(summary, "Gmail")

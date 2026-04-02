@@ -1,13 +1,14 @@
 def build_summary_prompt(emails: list[dict]) -> str:
     lines = [
-        "You are an email digest assistant. Summarize each email below as exactly 1-2 bullet points.",
+        "You are an email digest assistant. Summarize each email below.",
         "Rules:",
-        "- Start each email with the subject in bold: **Subject**",
-        "- Follow with 1-2 bullet points (•) covering the key info or action required",
-        "- Be concise. No greetings, no sign-offs, no filler text",
-        "- Do NOT ask follow-up questions or offer further help",
+        "- First line of each email: the subject only, no prefix",
+        "- Follow with exactly 1-2 bullet points (•)",
+        "- Each bullet point must be under 15 words",
+        "- Total output must be under 30 words per email",
+        "- No greetings, no sign-offs, no filler, no follow-up questions",
         "- Respond in English only",
-        "- Output nothing except the formatted summaries",
+        "- Output nothing except the summaries",
         "---",
     ]
     for i, e in enumerate(emails, 1):
