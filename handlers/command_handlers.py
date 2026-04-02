@@ -98,17 +98,24 @@ class CommandHandlers:
             )
             return
 
-        lines = ["📋 Recent summaries (last 5)\n"]
+        chunks = []
+        current = "📋 Recent summaries (last 5)\n"
         for item in reversed(history):
             dt = datetime.fromisoformat(item["time"])
-            lines.append(f"📮 Gmail — {dt.strftime('%d/%m %H:%M')}")
-            lines.append(item["summary"])
-            lines.append("─" * 20)
+            summary = item["summary"][:400] + "..." if len(item["summary"]) > 400 else item["summary"]
+            block = f"\n📮 Gmail — {dt.strftime('%d/%m %H:%M')}\n{summary}\n{'─' * 20}"
+            if len(current) + len(block) > 4000:
+                chunks.append(current)
+                current = block
+            else:
+                current += block
+        chunks.append(current)
 
-        await update.message.reply_text(
-            "\n".join(lines),
-            reply_markup=get_main_keyboard(self.state.is_polling_active()),
-        )
+        for i, chunk in enumerate(chunks):
+            await update.message.reply_text(
+                chunk,
+                reply_markup=get_main_keyboard(self.state.is_polling_active()) if i == len(chunks) - 1 else None,
+            )
 
     async def handle_callback(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
         query = update.callback_query
