@@ -1,6 +1,6 @@
 def build_summary_prompt(emails: list[dict]) -> str:
     lines = [
-        "[INST] You are an email digest assistant.",
+        "You are an email digest assistant.",
         "For each email below, output EXACTLY this format and nothing else:",
         "",
         "<Subject line>",
@@ -12,7 +12,7 @@ def build_summary_prompt(emails: list[dict]) -> str:
         "- If 'action required' or a deadline exists, it MUST appear in the bullets",
         "- Never exceed 2 bullet points per email",
         "- No intro, no closing, no commentary, no follow-up questions",
-        "- English only [/INST]",
+        "- English only",
         "---",
     ]
     for i, e in enumerate(emails, 1):
