@@ -8,7 +8,7 @@ Automatically monitors your Gmail inbox, summarizes new emails using a local LLM
 
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Telegram](https://img.shields.io/badge/Telegram_Bot-v20+-26A5E4?style=flat-square&logo=telegram&logoColor=white)
-![Ollama](https://img.shields.io/badge/Ollama-llama3.2-black?style=flat-square&logo=ollama&logoColor=white)
+![Ollama](https://img.shields.io/badge/Ollama-mistral:7b-black?style=flat-square&logo=ollama&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)
 
 </div>
@@ -18,7 +18,7 @@ Automatically monitors your Gmail inbox, summarizes new emails using a local LLM
 ## ✨ Features
 
 - **Auto-polling** — checks Gmail every 2 minutes in the background
-- **AI summaries** — sends emails to a local Ollama instance (llama3.2) and returns bullet-point digests
+- **AI summaries** — sends emails to a local Ollama instance (mistral:7b) and returns bullet-point digests
 - **Reply Keyboard** — persistent 4-button menu, no need to type commands
 - **Snooze** — pause notifications for 1 / 3 / 8 hours, auto-resumes
 - **History** — view the last 5 summaries at any time
@@ -33,7 +33,7 @@ Automatically monitors your Gmail inbox, summarizes new emails using a local LLM
 | Language | Python 3.10+ |
 | Telegram | [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot) v20+ |
 | Gmail | Google Gmail API + OAuth 2.0 |
-| LLM | [Ollama](https://ollama.com) — llama3.2:3b |
+| LLM | [Ollama](https://ollama.com) — mistral:7b (recommended) |
 | Scheduler | `job_queue` (built into python-telegram-bot) |
 
 ---
@@ -113,8 +113,18 @@ scp gmail_token.json user@your-server:/path/to/mail-digest-bot/
 **If Ollama runs on the same server as the bot:**
 ```bash
 ollama serve
-ollama pull llama3.2:3b
+ollama pull mistral:7b
 ```
+
+**Recommended models** (CPU-only, no GPU required):
+
+| Model | RAM | Quality | Speed |
+|-------|-----|---------|-------|
+| mistral:7b *(recommended)* | ~4.5GB | Great | Medium |
+| llama3.1:8b | ~5GB | Great | Medium |
+| llama3.2:3b | ~2GB | Fair | Fast |
+
+> To switch models, update `OLLAMA_MODEL` in `.env` and pull the new model with `ollama pull <model>`.
 
 **If Ollama runs on a separate server (Server A) and the bot runs on Server B:**
 
@@ -168,7 +178,7 @@ GMAIL_CREDENTIALS_FILE=credentials.json
 
 # Ollama
 OLLAMA_HOST=http://localhost:11434
-OLLAMA_MODEL=llama3.2:3b
+OLLAMA_MODEL=mistral:7b
 
 # Bot
 POLLING_INTERVAL_SECONDS=120
@@ -291,12 +301,16 @@ When new emails arrive, the bot sends:
 ```
 📮 New emails — Gmail
 
-• Q1 project on track — deliverables due next Friday
-• Budget review meeting tomorrow 2 PM — prepare docs
+Monthly Performance Review
+• 3 actions due: review Node-04 thermal logs, verify dataset, firmware update by Apr 5
+• Thermal spike 82.4°C on Gateway-Node-04 — needs ZRAM swap + fan threshold fix
+
+GitHub Authentication Code
+• Verify identity with code 66694264 — expires in 15 min
 ```
 
-- 1–2 bullet points per email
-- Highlights key action items
+- Subject line per email, followed by 1–2 bullet points
+- Prioritizes action items and deadlines over general info
 
 ---
 
@@ -319,7 +333,12 @@ When new emails arrive, the bot sends:
 
 <br>
 
-The first run opens a browser for OAuth consent. If running on a headless server, run `python main.py` once on a local machine to generate `gmail_token.json`, then copy that file to the server. The browser prompt will not appear again.
+Run `auth.py` on a local machine (with a browser) to generate `gmail_token.json`, then copy it to the server. The browser prompt will not appear again.
+
+```bash
+python auth.py
+scp gmail_token.json user@your-server:/path/to/mail-digest-bot/
+```
 
 </details>
 
