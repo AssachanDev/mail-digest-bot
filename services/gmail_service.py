@@ -72,6 +72,7 @@ class GmailService(BaseMailService):
                 "subject": headers.get("Subject", "(no subject)"),
                 "from": headers.get("From", "Unknown"),
                 "snippet": body[:BODY_LIMIT] if body else msg.get("snippet", ""),
+                "labels": msg.get("labelIds", []),
             }
         except Exception as e:
             logger.error(f"Gmail get message error {message_id}: {e}")
